@@ -1,6 +1,7 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { client } from "../utils/sanity.ts";
 import { JSX } from "preact";
+import Navigation from "../components/Navigation.tsx";
 
 // 定义类型接口
 interface Post {
@@ -30,9 +31,9 @@ interface PageData {
 export const handler: Handlers = {
   async GET(_req, ctx) {
     try {
-      console.log("Fetching posts with essay category reference...");
+      console.log("Fetching posts with essay category...");
       
-      const query = `*[_type == "post"] | order(_createdAt desc) {
+      const query = `*[_type == "post" && "essay" in categories[]->title] | order(_createdAt desc) {
         _id,
         _createdAt,
         title,
@@ -47,20 +48,13 @@ export const handler: Handlers = {
       const posts = await client.fetch(query);
       console.log("Posts fetched:", posts);
       console.log("Posts count:", posts?.length || 0);
-      
-      // 过滤出有 essay category 的文章
-      const essayPosts = posts?.filter((post: Post) => 
-        post.categories?.some((cat: CategoryRef) => cat.title === "essay")
-      ) || [];
-      console.log("Essay posts:", essayPosts);
-      console.log("Essay posts count:", essayPosts.length);
 
-      if (!essayPosts) {
-        console.warn("No essay posts returned from Sanity");
+      if (!posts) {
+        console.warn("No posts returned from Sanity");
         return ctx.render({ posts: [], error: null });
       }
 
-      return ctx.render({ posts: essayPosts, error: null });
+      return ctx.render({ posts, error: null });
     } catch (err) {
       console.error("Failed to fetch posts from Sanity:", err);
       return ctx.render({
@@ -94,14 +88,7 @@ export default function Things({ data }: PageProps<PageData>) {
 
   return (
     <div class="min-h-screen bg-white font-sans antialiased selection:bg-black selection:text-white">
-      {/* 导航栏：还原图一的轻盈感，改进移动端适配 */}
-      <nav class="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-md">
-        <div class="flex items-center justify-center gap-6 px-6 py-2 bg-[#F2F2F2]/80 backdrop-blur-xl rounded-full border border-white/20 shadow-sm">
-          <a href="/" class="relative text-[14px] sm:text-[15px] text-black font-semibold after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-[1.5px] after:bg-black">Things</a>
-          <a href="/about" class="text-[14px] sm:text-[15px] text-black/50 hover:text-black transition-colors font-medium">About</a>
-          <a href="/portfolio" class="text-[14px] sm:text-[15px] text-black/50 hover:text-black transition-colors font-medium">Portfolio</a>
-        </div>
-      </nav>
+      <Navigation currentPage="things" />
 
       <main class="max-w-[1100px] mx-auto pt-32 sm:pt-48 md:pt-56 px-4 sm:px-8 md:px-16 pb-20 sm:pb-32">
         {/* Hero Section：严格对齐图一排版 */}
