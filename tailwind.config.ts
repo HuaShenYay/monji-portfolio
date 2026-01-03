@@ -13,7 +13,7 @@ export default {
       // 针对你截图中的大标题进行字间距微调
       letterSpacing: {
         tightest: "-.04em",
-      }
+      },
     },
   },
 } as Config;

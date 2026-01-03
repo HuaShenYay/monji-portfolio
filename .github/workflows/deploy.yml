@@ -32,5 +32,3 @@ jobs:
           project: "portfolio-monji"
           entrypoint: "main.ts"
           root: "."
-          
-          
