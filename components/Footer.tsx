@@ -14,7 +14,7 @@ export default function Footer() {
             class="text-black/70 hover:text-black transition-colors font-medium"
             href="/rights"
           >
-            版权归属
+            版权声明
           </a>
         </div>
       </div>

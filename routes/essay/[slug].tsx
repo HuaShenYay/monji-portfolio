@@ -3,6 +3,7 @@ import { client, urlFor } from "../../utils/sanity.ts";
 import Navigation from "../../islands/LiquidNavGlass.tsx";
 import Reveal from "../../islands/Reveal.tsx";
 import Footer from "../../components/Footer.tsx";
+import Link from "../../components/Link.tsx";
 
 interface Block {
   _type: string;
@@ -46,40 +47,6 @@ interface EssayPost {
 interface EssayData {
   post: EssayPost;
 }
-
-// Portable Text 渲染器组件
-const components = {
-  types: {
-    image: ({ value }: { value: any }) => {
-      return (
-        <div class="my-8 rounded-[24px] overflow-hidden">
-          <img
-            src={urlFor(value).width(800).url()}
-            alt={value.alt || "Essay Image"}
-            class="w-full h-auto"
-          />
-        </div>
-      );
-    },
-  },
-  block: {
-    h2: ({ children }: { children: any }) => (
-      <h2 class="text-[32px] font-bold mt-12 mb-6 tracking-tight">
-        {children}
-      </h2>
-    ),
-    h3: ({ children }: { children: any }) => (
-      <h3 class="text-[24px] font-bold mt-8 mb-4 tracking-tight">
-        {children}
-      </h3>
-    ),
-    normal: ({ children }: { children: any }) => (
-      <p class="text-[#424245] text-[17px] leading-[1.7] mb-6 tracking-tight">
-        {children}
-      </p>
-    ),
-  },
-};
 
 export const handler: Handlers<EssayData> = {
   async GET(_req, ctx) {
@@ -137,14 +104,9 @@ function parseUrlsInText(text: string): (string | preact.JSX.Element)[] {
     // 添加链接
     const url = match[0];
     parts.push(
-      <a
-        href={url}
-        class="text-blue-600 hover:text-blue-800 underline"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <Link href={url}>
         {url}
-      </a>
+      </Link>
     );
     
     lastIndex = match.index + match[0].length;
@@ -202,15 +164,14 @@ function renderBlocks(blocks: Block[] | undefined) {
                     const linkDef = findLinkDefinition(block, mark);
                     if (linkDef && linkDef.href) {
                       content = (
-                        <a
+                        <Link
                           key={childIndex}
                           href={linkDef.href}
-                          class="text-blue-600 hover:text-blue-800 underline"
                           target={linkDef.blank ? "_blank" : "_self"}
                           rel={linkDef.blank ? "noopener noreferrer" : undefined}
                         >
                           {content}
-                        </a>
+                        </Link>
                       );
                     }
                   }
@@ -283,15 +244,14 @@ function renderBlocks(blocks: Block[] | undefined) {
                     const linkDef = findLinkDefinition(block, mark);
                     if (linkDef && linkDef.href) {
                       content = (
-                        <a
+                        <Link
                           key={childIndex}
                           href={linkDef.href}
-                          class="text-blue-600 hover:text-blue-800 underline"
                           target={linkDef.blank ? "_blank" : "_self"}
                           rel={linkDef.blank ? "noopener noreferrer" : undefined}
                         >
                           {content}
-                        </a>
+                        </Link>
                       );
                     }
                   }
