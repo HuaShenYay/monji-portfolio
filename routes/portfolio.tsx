@@ -267,8 +267,6 @@ export default function PortfolioPage({ data }: PageProps<PortfolioData>) {
             {renderSection("movie", bySection.movie)}
           </div>
         </Reveal>
-
-        <div class="mt-40 w-full h-[1px] bg-gray-100"></div>
       </main>
 
       <Footer />

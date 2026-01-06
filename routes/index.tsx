@@ -115,7 +115,7 @@ export default function Things({ data }: PageProps<PageData>) {
 
         {/* Posts 列表：对齐图一 Poem 部分的排版 */}
         <Reveal delay={0.04}>
-          <section class="max-w-2xl">
+          <section class="max-w-[1100px] mx-auto">
             <h2 class="text-[20px] sm:text-[22px] font-bold mb-8 sm:mb-10 text-black tracking-tight">
               全部博客
             </h2>
@@ -138,7 +138,7 @@ export default function Things({ data }: PageProps<PageData>) {
 
             {/* 文章列表 */}
             {posts.length > 0 && (
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-20 max-w-[1100px]">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-20">
                 {posts.map((post: Post, index: number) => {
                   const isLarge = index % 3 === 0;
                   const href = `/essay/${post.slug?.current || post._id}`;
@@ -154,7 +154,7 @@ export default function Things({ data }: PageProps<PageData>) {
                       } group cursor-pointer transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-[2px] active:translate-y-0`}
                     >
                       <div
-                        class={`aspect-video rounded-[32px] overflow-hidden mb-6 ring-1 ring-black/5 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.35)] transition-[transform,box-shadow] duration-500 ease-out group-hover:shadow-[0_16px_44px_-30px_rgba(0,0,0,0.40)] bg-[#F5F5F7] flex flex-col justify-center px-12 md:px-20`}
+                        class={`aspect-video rounded-[32px] overflow-hidden mb-6 ring-1 ring-black/5 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.35)] transition-[transform,box-shadow] duration-500 ease-out group-hover:shadow-[0_16px_44px_-30px_rgba(0,0,0,0.40)] bg-[#F5F5F7] flex flex-col justify-center items-center px-12 md:px-20 text-center`}
                       >
                         <div class="max-w-3xl">
                           <p class="text-[14px] text-gray-400 font-medium mb-4 uppercase tracking-widest">
