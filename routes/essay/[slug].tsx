@@ -92,8 +92,6 @@ export const handler: Handlers<EssayData> = {
         _createdAt,
         mainImage,
         image,
-        "mainImage": mainImage,
-        "image": image,
         body,
         content,
         slug,

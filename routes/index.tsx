@@ -65,14 +65,9 @@ export const handler: Handlers = {
       console.log("Posts fetched:", posts);
       console.log("Posts count:", posts?.length || 0);
 
-      if (!posts) {
-        console.warn("No posts returned from Sanity");
-        return ctx.render({ posts: [], error: null });
-      }
-
-      return ctx.render({ posts, error: null });
-    } catch (err) {
-      console.error("Failed to fetch posts from Sanity:", err);
+      return ctx.render({ posts });
+    } catch (error) {
+      console.error("Failed to fetch posts from Sanity:", error);
       return ctx.render({
         posts: [],
         error: "Failed to load content. Please try again later.",
