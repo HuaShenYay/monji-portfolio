@@ -33,7 +33,7 @@ export default function AboutPage() {
             {/* 左侧大图：使用占位色块，你可以换成自己的 static 图片地址 */}
             <div class="aspect-[4/3] bg-[#D9F3C1] rounded-[40px] overflow-hidden shadow-sm">
               <img
-                src="/my-avatar.jpg"
+                src="../../static/my-avatar.jpg"
                 alt="Me"
                 class="w-full h-full object-cover"
               />

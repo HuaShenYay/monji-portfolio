@@ -4,20 +4,26 @@ import Navigation from "../../islands/LiquidNavGlass.tsx";
 import Reveal from "../../islands/Reveal.tsx";
 import Footer from "../../components/Footer.tsx";
 
-interface Block {
-  _type: string;
-  style?: string;
-  children?: TextChild[];
+interface SanityImage {
+  _type: "image";
+  asset: { _ref: string; _type: "reference" };
 }
 
 interface TextChild {
   text?: string;
 }
 
+interface Block {
+  _type: string;
+  style?: string;
+  children?: TextChild[];
+  asset?: { _ref: string; _type: "reference" };
+}
+
 interface Article {
   title: string;
   _createdAt: string;
-  mainImage?: Record<string, unknown>;
+  mainImage?: SanityImage;
   description?: string;
   body?: Block[];
   authorName: string;
@@ -27,6 +33,40 @@ interface Article {
 interface ArticleData {
   article: Article;
 }
+
+// Portable Text 渲染器组件
+const components = {
+  types: {
+    image: ({ value }: { value: any }) => {
+      return (
+        <div class="my-8 rounded-[24px] overflow-hidden">
+          <img
+            src={urlFor(value).width(800).url()}
+            alt={value.alt || "Portfolio Image"}
+            class="w-full h-auto"
+          />
+        </div>
+      );
+    },
+  },
+  block: {
+    h2: ({ children }: { children: any }) => (
+      <h2 class="text-[32px] font-bold mt-12 mb-6 tracking-tight">
+        {children}
+      </h2>
+    ),
+    h3: ({ children }: { children: any }) => (
+      <h3 class="text-[24px] font-bold mt-8 mb-4 tracking-tight">
+        {children}
+      </h3>
+    ),
+    normal: ({ children }: { children: any }) => (
+      <p class="text-[#424245] text-[17px] leading-[1.7] mb-6 tracking-tight">
+        {children}
+      </p>
+    ),
+  },
+};
 
 export const handler: Handlers<ArticleData> = {
   async GET(_req, ctx) {
@@ -54,53 +94,72 @@ export const handler: Handlers<ArticleData> = {
   },
 };
 
-function renderBlocks(blocks: Block[] = []) {
+function renderBlocks(blocks: Block[] | undefined) {
+  if (!blocks) return [];
+
   return blocks
     .map((block, index) => {
-      if (block?._type !== "block") return null;
-
-      const text = block.children?.map((c) => c.text ?? "").join("") ?? "";
-
-      if (block.style === "h3") {
+      // 处理图片块
+      if (block._type === "image" && block.asset) {
+        const imageUrl = urlFor(block as any).width(800).url();
+        console.log("Portfolio block image URL:", imageUrl);
         return (
-          <h3
-            key={index}
-            class="text-[22px] font-bold mt-12 mb-4 tracking-tight text-black"
-          >
-            {text}
-          </h3>
-        );
-      }
-
-      if (block.style === "blockquote") {
-        return (
-          <div key={index} class="my-16 py-4 px-2">
-            <h2 class="text-[32px] md:text-[40px] font-bold leading-[1.2] tracking-tighter text-black text-center italic">
-              “{text}”
-            </h2>
-            <div class="mt-8 flex flex-col items-center">
-              <div class="w-8 h-8 bg-[#FFE8D6] rounded-full mb-2" />
-              <p class="text-[14px] font-bold">Full name</p>
-              <p class="text-[12px] text-gray-400">Role at company</p>
-            </div>
+          <div class="my-8 rounded-[24px] overflow-hidden" key={index}>
+            <img
+              src={imageUrl}
+              alt="Portfolio Image"
+              class="w-full h-auto"
+            />
           </div>
         );
       }
 
-      return (
-        <p
-          key={index}
-          class="text-[#424245] text-[17px] leading-[1.7] mb-6 tracking-tight"
-        >
-          {text}
-        </p>
-      );
+      // 处理标题块
+      if (block._type === "block" && block.style?.startsWith("h")) {
+        const text = block.children?.map((child) => child.text).join("") || "";
+        const Tag = block.style as "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+        
+        if (Tag === "h2") {
+          return (
+            <h2 class="text-[32px] font-bold mt-12 mb-6 tracking-tight" key={index}>
+              {text}
+            </h2>
+          );
+        }
+        
+        if (Tag === "h3") {
+          return (
+            <h3 class="text-[24px] font-bold mt-8 mb-4 tracking-tight" key={index}>
+              {text}
+            </h3>
+          );
+        }
+      }
+
+      // 处理普通段落
+      if (block._type === "block" && (!block.style || block.style === "normal")) {
+        const text = block.children?.map((child) => child.text).join("") || "";
+        return (
+          <p
+            key={index}
+            class="text-[#424245] text-[17px] leading-[1.7] mb-6 tracking-tight"
+          >
+            {text}
+          </p>
+        );
+      }
+
+      return null;
     })
     .filter((el): el is preact.JSX.Element => el !== null);
 }
 
 export default function ArticlePage({ data }: PageProps<ArticleData>) {
   const { article } = data;
+
+  // 调试信息
+  console.log("Portfolio article data:", article);
+  console.log("Main image:", article.mainImage);
 
   return (
     <div class="min-h-screen bg-white font-sans antialiased text-black pb-8">
@@ -133,7 +192,7 @@ export default function ArticlePage({ data }: PageProps<ArticleData>) {
             <section class="mb-20">
               <div class="aspect-[16/10] bg-[#F5F5F7] rounded-[40px] overflow-hidden ring-1 ring-black/5 shadow-[0_14px_40px_-26px_rgba(0,0,0,0.35)]">
                 <img
-                  src={urlFor(article.mainImage).width(1200).url()}
+                  src={urlFor(article.mainImage as any).width(1200).url()}
                   class="w-full h-full object-cover"
                 />
               </div>
